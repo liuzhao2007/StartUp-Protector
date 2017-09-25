@@ -6,7 +6,7 @@ import android.util.Log;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class LogUtils {
+public class ProtectorLogUtils {
 
     private static String DEFAULT_TAG = "protector";
     private static boolean debug = true;
@@ -117,6 +117,6 @@ public class LogUtils {
     }
 
     public static void setDebug(boolean debug) {
-        LogUtils.debug = debug;
+        ProtectorLogUtils.debug = debug;
     }
 }

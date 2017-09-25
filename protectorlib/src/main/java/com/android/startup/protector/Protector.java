@@ -8,8 +8,8 @@ import android.os.Looper;
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.handler.ProtectorHandler;
-import com.android.startup.protector.util.LogUtils;
-import com.android.startup.protector.util.SpUtils;
+import com.android.startup.protector.util.ProtectorLogUtils;
+import com.android.startup.protector.util.ProtectorSpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +42,10 @@ public class Protector {
 
     public Protector init(Application application) {
         context = application;
-        SpUtils.putInt(SpConstant.CRASHCONUT, SpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
-        int countNow = SpUtils.getInt(SpConstant.CRASHCONUT, 0);
+        ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
+        int countNow = ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0);
         if (countNow > firstLevel) {
-            LogUtils.i("enter level one");
+            ProtectorLogUtils.i("enter level one");
             for (Runnable runnable : userTasks) {
                 if (runnable != null) {
                     runnable.run();
@@ -54,8 +54,13 @@ public class Protector {
 
             if (countNow > SecondLevel) {
                 // clear all and fix
-                LogUtils.i("enter level two");
+                ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
+
+                while(true){
+
+                }
+
             }
 
         }
@@ -77,8 +82,8 @@ public class Protector {
 
     // mark as app lanuch successed
     public void markSucceed() {
-        SpUtils.putInt(SpConstant.CRASHCONUT, 0);
-        LogUtils.i("markSuceed");
+        ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, 0);
+        ProtectorLogUtils.i("markSuceed");
     }
 
     // if try to restart app
@@ -87,8 +92,8 @@ public class Protector {
     }
 
     public Protector setDebug(boolean isDebug) {
-        LogUtils.setDebug(isDebug);
-        LogUtils.i("StartUp-Protector debug : " + isDebug);
+        ProtectorLogUtils.setDebug(isDebug);
+        ProtectorLogUtils.i("StartUp-Protector debug : " + isDebug);
         return this;
     }
 

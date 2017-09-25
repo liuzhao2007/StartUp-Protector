@@ -9,9 +9,9 @@ import android.os.Build;
 
 import com.android.startup.protector.Protector;
 import com.android.startup.protector.constant.SpConstant;
-import com.android.startup.protector.util.LogUtils;
+import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorUtils;
-import com.android.startup.protector.util.SpUtils;
+import com.android.startup.protector.util.ProtectorSpUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -32,24 +32,24 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable ex) {
-        LogUtils.i("uncaughtException");
+        ProtectorLogUtils.i("uncaughtException");
 
         Context context = Protector.getInstance().getContext();
         String errorMsg = getCrashInfo(ex);
         String packName = context.getPackageName();
-        LogUtils.e("CrashInfo:" + errorMsg);
+        ProtectorLogUtils.e("CrashInfo:" + errorMsg);
         long crashtime = System.currentTimeMillis();
-        long lastCrashTime = SpUtils.getLong(SpConstant.CRASHTIME, 0);
-        LogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
+        long lastCrashTime = ProtectorSpUtils.getLong(SpConstant.CRASHTIME, 0);
+        ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
-            LogUtils.e("超过十秒");
+            ProtectorLogUtils.e("超过十秒");
             // 两次崩溃时间超过限制才去重启。十秒之内的崩溃第二次连续崩溃，不重启。
 //                if (CrashManager.ifRestart(errorMsg)) {
             // 根据CrashManager的判断来决定重启与否。
-            LogUtils.e("要重启");
+            ProtectorLogUtils.e("要重启");
             restartApp(context, packName);
 
-            SpUtils.putLong(SpConstant.CRASHTIME, crashtime);
+            ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
         }
 
 //            android.os.Process.killProcess(android.os.Process.myPid());

@@ -10,7 +10,7 @@ import static java.security.AccessController.getContext;
 /**
  * Created by liuzhao on 2017/9/22.
  */
-public class SpUtils {
+public class ProtectorSpUtils {
 
     private static String NAME = "startup_protector";
 
