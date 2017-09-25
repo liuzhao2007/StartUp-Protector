@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.android.startup.protector.Protector;
 
+import static java.security.AccessController.getContext;
+
 /**
  * Created by liuzhao on 2017/9/22.
  */
@@ -13,7 +15,7 @@ public class SpUtils {
     private static String NAME = "startup_protector";
 
     public static SharedPreferences getSharedPreference() {
-        return Protector.getContext().getSharedPreferences(NAME, Context.MODE_PRIVATE);
+        return Protector.getInstance().getContext().getSharedPreferences(NAME, Context.MODE_PRIVATE);
     }
 
     public static boolean putString(String key, String value) {

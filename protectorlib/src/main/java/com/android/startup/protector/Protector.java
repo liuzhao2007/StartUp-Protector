@@ -7,13 +7,12 @@ import android.os.Looper;
 
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
+import com.android.startup.protector.handler.ProtectorHandler;
 import com.android.startup.protector.util.LogUtils;
 import com.android.startup.protector.util.SpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * Created by liuzhao on 2017/9/22.
@@ -23,8 +22,9 @@ public class Protector {
     private static Context context;
     private static Protector mProtector;
     private List<Runnable> userTasks = new ArrayList<>();// tasks user define
-    private static final int firstLevel = 2;
+    private static final int firstLevel = 3;
     private static final int SecondLevel = 5;
+    public boolean restartApp;
 
     private Protector() {
     }
@@ -81,13 +81,18 @@ public class Protector {
         LogUtils.i("markSuceed");
     }
 
+    // if try to restart app
+    public void restart(boolean restart) {
+        restartApp = restart;
+    }
+
     public Protector setDebug(boolean isDebug) {
         LogUtils.setDebug(isDebug);
         LogUtils.i("StartUp-Protector debug : " + isDebug);
         return this;
     }
 
-    public static Context getContext() {
+    public Context getContext() {
         return context;
     }
 
