@@ -5,13 +5,15 @@ import android.os.Handler;
 import android.content.Context;
 import android.os.Looper;
 
-import com.android.startup.protector.clear.ProtectorClear;
+import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.util.LogUtils;
 import com.android.startup.protector.util.SpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * Created by liuzhao on 2017/9/22.
@@ -43,6 +45,7 @@ public class Protector {
         SpUtils.putInt(SpConstant.CRASHCONUT, SpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
         int countNow = SpUtils.getInt(SpConstant.CRASHCONUT, 0);
         if (countNow > firstLevel) {
+            LogUtils.i("enter level one");
             for (Runnable runnable : userTasks) {
                 if (runnable != null) {
                     runnable.run();
@@ -51,7 +54,8 @@ public class Protector {
 
             if (countNow > SecondLevel) {
                 // clear all and fix
-                ProtectorClear.clearAllFile(context);
+                LogUtils.i("enter level two");
+                ProtectorClearer.clearAllFile(context);
             }
 
         }
@@ -74,6 +78,7 @@ public class Protector {
     // mark as app lanuch successed
     public void markSucceed() {
         SpUtils.putInt(SpConstant.CRASHCONUT, 0);
+        LogUtils.i("markSuceed");
     }
 
     public Protector setDebug(boolean isDebug) {
