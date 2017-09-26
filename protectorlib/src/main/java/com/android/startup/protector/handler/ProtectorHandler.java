@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 
 public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
 
-    private static final long TIME_CRASHNOTREOPEN = 10000;//crash之后不重启的时间。
+    private static final long TIME_CRASHNOTREOPEN = 10000;//the time not to restart after crash
     private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
     public ProtectorHandler(Thread.UncaughtExceptionHandler exceptionHandler) {
@@ -32,8 +32,6 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable ex) {
-        ProtectorLogUtils.i("uncaughtException");
-
         Context context = Protector.getInstance().getContext();
         String errorMsg = getCrashInfo(ex);
         String packName = context.getPackageName();
@@ -42,11 +40,9 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         long lastCrashTime = ProtectorSpUtils.getLong(SpConstant.CRASHTIME, 0);
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
-            ProtectorLogUtils.e("超过十秒");
-            // 两次崩溃时间超过限制才去重启。十秒之内的崩溃第二次连续崩溃，不重启。
+            ProtectorLogUtils.e("more than time we define, may restart app");
 //                if (CrashManager.ifRestart(errorMsg)) {
-            // 根据CrashManager的判断来决定重启与否。
-            ProtectorLogUtils.e("要重启");
+            ProtectorLogUtils.e("decide to restart app");
             restartApp(context, packName);
 
             ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
@@ -79,7 +75,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
     }
 
     /**
-     * 获取Crash的信息；方便定位、后期统计。
+     * get info include crash and device to report or record
      *
      * @param ex
      * @return
@@ -89,12 +85,11 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         StringBuilder sb = new StringBuilder();
         PackageManager pm = Protector.getInstance().getContext().getPackageManager();
         PackageInfo packageInfo = null;
-        // 获取错误的堆栈信息:先获取堆栈信息，然后获取手机内存信息
+        // get crash info
         StringWriter writer = new StringWriter();
         PrintWriter pw = new PrintWriter(writer);
         ex.printStackTrace(pw);
         String string = writer.toString();
-
         try {
             sb.append(string);
             packageInfo = pm.getPackageInfo(Protector.getInstance().getContext().getPackageName(),
@@ -103,7 +98,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
             sb.append("VersionCode = " + packageInfo.versionName);
             sb.append("\n");
 
-            // 然后获取用户的手机硬件信息
+            // get device info
             Field[] fields = Build.class.getDeclaredFields();
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
@@ -119,7 +114,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         return sb.append("myTid = " + android.os.Process.myTid()).append("\n")
                 .append("myPid = " + android.os.Process.myPid()).append("\n")
                 .append("myUid = " + android.os.Process.myUid()).append("\n")
-                .append("ThreadId = " + Thread.currentThread().getName()).append("\n")
+                .append("ThreadName = " + Thread.currentThread().getName()).append("\n")
                 .append("ProcessName = " + ProtectorUtils.getCurProcessName(Protector.getInstance().getContext())).toString();
     }
 

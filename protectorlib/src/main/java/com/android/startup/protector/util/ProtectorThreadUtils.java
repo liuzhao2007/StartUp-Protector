@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by liuzhao on 2017/9/26.
  * <p>
- * the count is copied from android/os/AsyncTask.java
+ * the thread count is copied from android/os/AsyncTask.java
  */
 
 public class ProtectorThreadUtils {
@@ -17,7 +17,7 @@ public class ProtectorThreadUtils {
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
-    private static final int KEEP_ALIVE_SECONDS = 30;
+    private static final int KEEP_ALIVE_SECONDS = 10;
 
 
     private ProtectorThreadUtils() {

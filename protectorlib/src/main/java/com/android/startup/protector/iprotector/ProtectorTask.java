@@ -20,6 +20,9 @@ public abstract class ProtectorTask implements Runnable {
         });
     }
 
+    /**
+     * notice: must be called when your fix is ok !!!
+     */
     public void onPostExecute() {
         isFinished = true;
     }
@@ -28,5 +31,8 @@ public abstract class ProtectorTask implements Runnable {
         return isFinished;
     }
 
+    /**
+     * notice: must call onPostExecute when your fix is ok !!!
+     */
     public abstract void doInBackground();
 }

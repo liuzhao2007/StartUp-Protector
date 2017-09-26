@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ProtectorUtils {
     /**
-     * 获取当前进程名
+     * getCurrentProcessName
      *
      * @param context
      * @return
@@ -32,5 +32,30 @@ public class ProtectorUtils {
             }
         }
         return "";
+    }
+
+
+    /**
+     * is main process
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isMainProcess(Context context) {
+        try {
+            ActivityManager am = ((ActivityManager) context
+                    .getSystemService(Context.ACTIVITY_SERVICE));
+            List<ActivityManager.RunningAppProcessInfo> processInfo = am.getRunningAppProcesses();
+            String mainProcessName = context.getPackageName();
+            int myPid = android.os.Process.myPid();
+            for (ActivityManager.RunningAppProcessInfo info : processInfo) {
+                if (info.pid == myPid && mainProcessName.equals(info.processName)) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -12,6 +12,7 @@ import com.android.startup.protector.iprotector.ProtectorTask;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
 import com.android.startup.protector.util.ProtectorThreadUtils;
+import com.android.startup.protector.util.ProtectorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class Protector {
     private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
     private static final int firstLevel = 3;
     private static final int SecondLevel = 5;
-    public boolean restartApp;
+    public boolean restartApp = true;
     private ProtectorTask mProtectorTask;
 
     private Protector() {
@@ -43,7 +44,15 @@ public class Protector {
         return mProtector;
     }
 
-    public Protector init(Application application) {
+    public void init(Application application) {
+        if (application == null) {
+            ProtectorLogUtils.e("serious error : param application is null");
+            return;
+        }
+
+        if (!ProtectorUtils.isMainProcess(application)) {
+            return;
+        }
         context = application;
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
         int countNow = ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0);
@@ -54,7 +63,7 @@ public class Protector {
                     ProtectorThreadUtils.getInstance().execute(runnable);
                 }
             }
-            if (countNow > SecondLevel) {
+            if (countNow >= SecondLevel) {
                 // clear all and fix
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
@@ -68,7 +77,7 @@ public class Protector {
                         }
                     });
                     while (!mProtectorTask.isFinished()) {
-//                        ProtectorLogUtils.i("Perform time-consuming operations");
+                        // do nothing here, which can save memory and cpu.
                     }
                 }
             }
@@ -81,7 +90,6 @@ public class Protector {
             }
         }, 5000);
         Thread.setDefaultUncaughtExceptionHandler(new ProtectorHandler(Thread.getDefaultUncaughtExceptionHandler()));
-        return this;
     }
 
     public Protector addTask(Runnable runnable) {

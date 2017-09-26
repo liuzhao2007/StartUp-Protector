@@ -6,6 +6,9 @@ import android.util.Log;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+/**
+ * Created by liuzhao on 2017/9/22.
+ */
 public class ProtectorLogUtils {
 
     private static String DEFAULT_TAG = "protector";
