@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.handler.ProtectorHandler;
+import com.android.startup.protector.iprotector.ICrashManager;
 import com.android.startup.protector.iprotector.ProtectorTask;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
@@ -25,6 +26,7 @@ public class Protector {
     private static Context context;
     private static Protector mProtector;
     private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
+    private List<ICrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
     private static final int firstLevel = 3;
     private static final int SecondLevel = 5;
     public boolean restartApp = true;
@@ -97,6 +99,10 @@ public class Protector {
         return this;
     }
 
+    public Protector addCrashManager(ICrashManager crashManager) {
+        mUserCrashManagers.add(crashManager);
+        return this;
+    }
 
     public Protector addSynchronousTask(ProtectorTask protectorTask) {
         mProtectorTask = protectorTask;
@@ -124,5 +130,8 @@ public class Protector {
         return context;
     }
 
+    public List<ICrashManager> getUserCrashManagers() {
+        return mUserCrashManagers;
+    }
 
 }

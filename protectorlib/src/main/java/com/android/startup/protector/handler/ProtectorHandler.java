@@ -9,6 +9,7 @@ import android.os.Build;
 
 import com.android.startup.protector.Protector;
 import com.android.startup.protector.constant.SpConstant;
+import com.android.startup.protector.iprotector.ICrashManager;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
@@ -16,6 +17,7 @@ import com.android.startup.protector.util.ProtectorSpUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by liuzhao on 2017/9/22.
@@ -41,15 +43,22 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
             ProtectorLogUtils.e("more than time we define, may restart app");
-//                if (CrashManager.ifRestart(errorMsg)) {
-            ProtectorLogUtils.e("decide to restart app");
-            restartApp(context, packName);
-
-            ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
+            boolean ifStart = true;
+            List<ICrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
+            // we need to konw if this crash satisfy the Situation to restart
+            if (mUserCrashManagers != null && !mUserCrashManagers.isEmpty()) {
+                for (ICrashManager iCrashManager : mUserCrashManagers) {
+                    if (!iCrashManager.ifRestart(errorMsg)) {
+                        ifStart = false;
+                    }
+                }
+            }
+            if (ifStart) {
+                ProtectorLogUtils.e("decide to restart app");
+                ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
+                restartApp(context, packName);
+            }
         }
-
-//            android.os.Process.killProcess(android.os.Process.myPid());
-
         if (mDefaultUncaughtExceptionHandler != null) {
             mDefaultUncaughtExceptionHandler.uncaughtException(t, ex);
         }
@@ -62,12 +71,13 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
                     PackageManager.GET_UNINSTALLED_PACKAGES
                             | PackageManager.GET_ACTIVITIES);
             ActivityInfo[] activities = packInfo.activities;
-            if (activities.length != 0) {
+            if (activities != null && activities.length != 0) {
                 ActivityInfo startActivity = activities[0];
                 Intent intent = new Intent();
                 intent.setClassName(packName, startActivity.name);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         } catch (Exception e) {
             e.printStackTrace();
