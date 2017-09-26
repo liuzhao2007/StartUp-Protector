@@ -1,15 +1,17 @@
 package com.android.startup.protector;
 
 import android.app.Application;
-import android.os.Handler;
 import android.content.Context;
+import android.os.Handler;
 import android.os.Looper;
 
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.handler.ProtectorHandler;
+import com.android.startup.protector.iprotector.ProtectorTask;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
+import com.android.startup.protector.util.ProtectorThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +23,11 @@ import java.util.List;
 public class Protector {
     private static Context context;
     private static Protector mProtector;
-    private List<Runnable> userTasks = new ArrayList<>();// tasks user define
+    private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
     private static final int firstLevel = 3;
     private static final int SecondLevel = 5;
     public boolean restartApp;
+    private ProtectorTask mProtectorTask;
 
     private Protector() {
     }
@@ -46,23 +49,29 @@ public class Protector {
         int countNow = ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0);
         if (countNow > firstLevel) {
             ProtectorLogUtils.i("enter level one");
-            for (Runnable runnable : userTasks) {
+            for (Runnable runnable : mUserTasks) {
                 if (runnable != null) {
-                    runnable.run();
+                    ProtectorThreadUtils.getInstance().execute(runnable);
                 }
             }
-
             if (countNow > SecondLevel) {
                 // clear all and fix
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
 
-                while(true){
-
+                if (mProtectorTask != null) {
+                    // suspend the process , you can do a time-consuming operation for example hotfix here
+                    ProtectorThreadUtils.getInstance().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProtectorTask.doInBackground();
+                        }
+                    });
+                    while (!mProtectorTask.isFinished()) {
+//                        ProtectorLogUtils.i("Perform time-consuming operations");
+                    }
                 }
-
             }
-
         }
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -76,7 +85,13 @@ public class Protector {
     }
 
     public Protector addTask(Runnable runnable) {
-        userTasks.add(runnable);
+        mUserTasks.add(runnable);
+        return this;
+    }
+
+
+    public Protector addSynchronousTask(ProtectorTask protectorTask) {
+        mProtectorTask = protectorTask;
         return this;
     }
 
