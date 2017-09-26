@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
 
-    private static final long TIME_CRASHNOTREOPEN = 10000;//the time not to restart after crash
+    private static final long TIME_CRASHNOTREOPEN = 10000;//the time not to setRestart after crash
     private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
     public ProtectorHandler(Thread.UncaughtExceptionHandler exceptionHandler) {
@@ -35,26 +35,29 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable ex) {
         Context context = Protector.getInstance().getContext();
-        String errorMsg = getCrashInfo(ex);
+        String crashMsg = getCrashInfo(ex);
+        if (Protector.getInstance().getCrashCallBack() != null) {
+            Protector.getInstance().getCrashCallBack().uncaughtException(ex,crashMsg);
+        }
         String packName = context.getPackageName();
-        ProtectorLogUtils.e("CrashInfo:" + errorMsg);
+        ProtectorLogUtils.e("CrashMsg:" + crashMsg);
         long crashtime = System.currentTimeMillis();
         long lastCrashTime = ProtectorSpUtils.getLong(SpConstant.CRASHTIME, 0);
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
-            ProtectorLogUtils.e("more than time we define, may restart app");
+            ProtectorLogUtils.e("more than time we define, may setRestart app");
             boolean ifStart = true;
             List<ICrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
-            // we need to konw if this crash satisfy the Situation to restart
+            // we need to konw if this crash satisfy the Situation to setRestart
             if (mUserCrashManagers != null && !mUserCrashManagers.isEmpty()) {
                 for (ICrashManager iCrashManager : mUserCrashManagers) {
-                    if (!iCrashManager.ifRestart(errorMsg)) {
+                    if (!iCrashManager.ifRestart(crashMsg)) {
                         ifStart = false;
                     }
                 }
             }
             if (ifStart) {
-                ProtectorLogUtils.e("decide to restart app");
+                ProtectorLogUtils.e("decide to setRestart app");
                 ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
                 restartApp(context, packName);
             }

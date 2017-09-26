@@ -8,6 +8,7 @@ import android.os.Looper;
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.handler.ProtectorHandler;
+import com.android.startup.protector.iprotector.CrashCallBack;
 import com.android.startup.protector.iprotector.ICrashManager;
 import com.android.startup.protector.iprotector.ProtectorTask;
 import com.android.startup.protector.util.ProtectorLogUtils;
@@ -31,6 +32,8 @@ public class Protector {
     private static final int SecondLevel = 5;
     public boolean restartApp = true;
     private ProtectorTask mProtectorTask;
+
+    private CrashCallBack mCrashCallBack;
 
     private Protector() {
     }
@@ -115,9 +118,15 @@ public class Protector {
         ProtectorLogUtils.i("markSuceed");
     }
 
-    // if try to restart app
-    public Protector restart(boolean restart) {
+    // if try to setRestart app
+    public Protector setRestart(boolean restart) {
         restartApp = restart;
+        return this;
+    }
+
+    // setCrashCallback to handle crash for example record or report
+    public Protector setCrashCallBack(CrashCallBack crashCallBack) {
+        mCrashCallBack = crashCallBack;
         return this;
     }
 
@@ -133,6 +142,10 @@ public class Protector {
 
     public List<ICrashManager> getUserCrashManagers() {
         return mUserCrashManagers;
+    }
+
+    public CrashCallBack getCrashCallBack() {
+        return mCrashCallBack;
     }
 
 }
