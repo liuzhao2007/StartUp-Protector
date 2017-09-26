@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.novoda:bintray-release:0.4.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,4 +21,14 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    userOrg = 'liuzhaowy2007'
+    groupId = 'com.startup'
+    uploadName = 'StartUp-Protector'
+    publishVersion = '1.0.0'
+    desc = '避免App无法启动以及多次启动崩溃的框架，启动保护的最后防线。'
+    website = 'https://github.com/liuzhao2007/StartUp-Protector'
+    licences = ['Apache-2.0']
 }
