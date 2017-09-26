@@ -14,11 +14,13 @@ public class ProtectorApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // custom crashhandler should be seted before you init Protector
+        Thread.setDefaultUncaughtExceptionHandler(new TestCrashHandler());
         Protector.getInstance().addTask(new Runnable() {
             @Override
             public void run() {
                 Toast.makeText(getApplicationContext(), "执行注册逻辑", 1).show();
             }
-        }).addSynchronousTask(new TestProtectorTask()).init(ProtectorApp.this);
+        }).restart(false).addSynchronousTask(new TestProtectorTask()).init(ProtectorApp.this);
     }
 }

@@ -116,8 +116,9 @@ public class Protector {
     }
 
     // if try to restart app
-    public void restart(boolean restart) {
+    public Protector restart(boolean restart) {
         restartApp = restart;
+        return this;
     }
 
     public Protector setDebug(boolean isDebug) {

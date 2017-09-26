@@ -62,6 +62,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         if (mDefaultUncaughtExceptionHandler != null) {
             mDefaultUncaughtExceptionHandler.uncaughtException(t, ex);
         }
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     private void restartApp(Context context, String packName) {
