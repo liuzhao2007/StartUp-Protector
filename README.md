@@ -18,7 +18,7 @@
 - Gradle中配置；
 
 ```
-    compile ''
+    compile 'com.startup:protector:1.0.0'
 ```
 
 - 初始化；
@@ -37,10 +37,16 @@
                     .setRestart(false)
                     .init(ProtectorApp.this);
         ```
+
     - 退出应用的时候调用，崩溃的统计会更加精确；
         ```
             Protector.getInstance().lanuchSucceed();
         ```
+
+    - 备注；
+    ```
+        使用addSynchronousTask()添加同步方法时，任务执行完毕不需要阻塞进程时务必要调用onPostExecute()方法，否则进程会一直阻塞；
+    ```
 
 # 四、详细说明
 
