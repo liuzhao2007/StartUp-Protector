@@ -9,7 +9,7 @@ import android.os.Build;
 
 import com.android.startup.protector.Protector;
 import com.android.startup.protector.constant.SpConstant;
-import com.android.startup.protector.iprotector.ICrashManager;
+import com.android.startup.protector.iprotector.CrashManager;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
@@ -47,10 +47,10 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
             ProtectorLogUtils.e("more than time we define, may setRestart app");
             boolean ifStart = true;
-            List<ICrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
+            List<CrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
             // we need to konw if this crash satisfy the Situation to setRestart
             if (mUserCrashManagers != null && !mUserCrashManagers.isEmpty()) {
-                for (ICrashManager iCrashManager : mUserCrashManagers) {
+                for (CrashManager iCrashManager : mUserCrashManagers) {
                     if (!iCrashManager.ifRestart(crashMsg)) {
                         ifStart = false;
                     }

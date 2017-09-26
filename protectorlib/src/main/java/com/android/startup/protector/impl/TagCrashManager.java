@@ -2,7 +2,7 @@ package com.android.startup.protector.impl;
 
 import android.text.TextUtils;
 
-import com.android.startup.protector.iprotector.ICrashManager;
+import com.android.startup.protector.iprotector.CrashManager;
 
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by liuzhao on 2017/9/26.
  */
 
-public class TagCrashManager implements ICrashManager {
+public class TagCrashManager implements CrashManager {
 
     public ArrayList<String> crashTags = new ArrayList<String>();
 

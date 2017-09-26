@@ -9,7 +9,7 @@ import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
 import com.android.startup.protector.handler.ProtectorHandler;
 import com.android.startup.protector.iprotector.CrashCallBack;
-import com.android.startup.protector.iprotector.ICrashManager;
+import com.android.startup.protector.iprotector.CrashManager;
 import com.android.startup.protector.iprotector.ProtectorTask;
 import com.android.startup.protector.util.ProtectorLogUtils;
 import com.android.startup.protector.util.ProtectorSpUtils;
@@ -27,9 +27,9 @@ public class Protector {
     private static Context context;
     private static Protector mProtector;
     private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
-    private List<ICrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
-    private static final int firstLevel = 3;
-    private static final int SecondLevel = 5;
+    private List<CrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
+    private static final int firstLevel = 2;
+    private static final int SecondLevel = 3;
     public boolean restartApp = true;
     private ProtectorTask mProtectorTask;
 
@@ -68,7 +68,7 @@ public class Protector {
                     ProtectorThreadUtils.getInstance().execute(runnable);
                 }
             }
-            if (countNow >= SecondLevel) {
+            if (countNow > SecondLevel) {
                 // clear all and fix
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
@@ -91,7 +91,7 @@ public class Protector {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                markSucceed();
+                lanuchSucceed();
             }
         }, 5000);
         Thread.setDefaultUncaughtExceptionHandler(new ProtectorHandler(Thread.getDefaultUncaughtExceptionHandler()));
@@ -102,7 +102,7 @@ public class Protector {
         return this;
     }
 
-    public Protector addCrashManager(ICrashManager crashManager) {
+    public Protector addCrashManager(CrashManager crashManager) {
         mUserCrashManagers.add(crashManager);
         return this;
     }
@@ -113,7 +113,7 @@ public class Protector {
     }
 
     // mark as app lanuch successed
-    public void markSucceed() {
+    public void lanuchSucceed() {
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, 0);
         ProtectorLogUtils.i("markSuceed");
     }
@@ -140,7 +140,7 @@ public class Protector {
         return context;
     }
 
-    public List<ICrashManager> getUserCrashManagers() {
+    public List<CrashManager> getUserCrashManagers() {
         return mUserCrashManagers;
     }
 

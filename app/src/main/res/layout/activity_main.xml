@@ -9,11 +9,18 @@
         android:layout_marginTop="20dp"
         android:text="欢迎使用StartUp-Protector！" />
 
+
     <TextView
+        style="@style/tv_style"
+        android:layout_margin="20dp"
+        android:text="使用说明：点击下面按钮，应用崩溃；五秒之内再打开App，第三次会进入一级保护模式；第四次会进入二级保护模式。"
+        android:textSize="14sp" />
+
+    <Button
         android:id="@+id/tv_testcrash"
         style="@style/tv_style"
-        android:layout_marginTop="20dp"
-        android:text="测试Crash" />
+        android:text="测试Crash"
+        android:textAllCaps="false" />
 
 
 </LinearLayout>

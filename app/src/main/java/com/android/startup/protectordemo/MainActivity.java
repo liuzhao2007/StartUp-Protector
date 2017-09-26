@@ -2,8 +2,9 @@ package com.android.startup.protectordemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+
+import com.android.startup.protector.test.ProtectorTest;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -18,8 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_testcrash:
-                String string = null;
-                Log.i("lz", "string" + string.length());
+                ProtectorTest.testJavaCrash();
                 break;
         }
     }
