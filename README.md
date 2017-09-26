@@ -37,23 +37,27 @@
                     .setRestart(false)
                     .init(ProtectorApp.this);
         ```
+
     - 退出应用的时候调用，崩溃的统计会更加精确；
         ```
             Protector.getInstance().lanuchSucceed();
         ```
+
     - 备注；
-        ```
-            使用addSynchronousTask()添加同步方法时，任务执行完毕不需要阻塞进程时务必要调用onPostExecute()方法，否则进程会一直阻塞；
-        ```
+    ```
+        使用addSynchronousTask()添加同步方法时，任务执行完毕不需要阻塞进程时务必要调用onPostExecute()方法，否则进程会一直阻塞；
+    ```
 
 # 四、详细说明
 
-- addTask();    注册行为在一级安全模式触发；
-- addSynchronousTask();     注册阻塞的行为在二级安全模式触发，例如热修复等；
-- addCrashManager();    Crash的管理类，决定是否重启，例如场景重启；
-- setCrashCallBack();   Crash的回调，可获取到崩溃的信息，有原始的Throwable以及整理后的Msg；
-- setRestart();     设置是否重启，默认为true；true的状态下根据CrashManager最终决定是否重启，false则一定不会重启；
-- setDebug();   Log的开关；
+方法 | 说明
+---|---
+addTask | 注册行为在一级安全模式触发；
+addSynchronousTask | 注册阻塞的行为在二级安全模式触发，例如热修复等；
+addCrashManager | Crash的管理类，决定是否重启，例如场景重启；
+setCrashCallBack | Crash的回调，可获取到崩溃的信息，有原始的Throwable以及整理后的Msg；
+setRestart | 设置是否重启，默认为true；true的状态下根据CrashManager最终决定是否重启，false则一定不会重启；
+setDebug | Log的开关；
 
 # 五、其它
 
