@@ -44,9 +44,9 @@
         ```
 
     - 备注；
-    ```
-        **使用addSynchronousTask()添加同步方法时，任务执行完毕不需要阻塞进程时务必要调用onPostExecute()方法，否则进程会一直阻塞；**
-    ```
+        ```
+           使用addSynchronousTask()添加同步方法时，任务执行完毕不需要阻塞进程时务必要调用onPostExecute()方法，否则进程会一直阻塞；
+        ```
 
 # 四、详细说明
 
