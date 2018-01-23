@@ -37,6 +37,7 @@
                     .setRestart(false)
                     .init(ProtectorApp.this);
         ```
+    **备注：框架的注册需要在自定义的UncaughtExceptionHandler之后。**
 
     - 退出应用的时候调用，崩溃的统计(策略触发使用)会更加精确；
         ```
