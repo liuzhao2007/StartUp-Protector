@@ -105,7 +105,8 @@ public class Protector {
     }
 
     /**
-     * 添加正常的任务，在崩溃等级一执行
+     * add normal task,which will be runnned in FirstLevel situation;
+     * can add more than once
      *
      * @param runnable
      * @return
@@ -116,6 +117,7 @@ public class Protector {
     }
 
     /**
+     * add CrashManager to decide whether to restart
      * you can add more than once
      *
      * @param crashManager
@@ -126,6 +128,13 @@ public class Protector {
         return this;
     }
 
+    /**
+     * add Synchronous task,which will be runnned in worst situation;
+     * can add more
+     *
+     * @param synchronousTask
+     * @return
+     */
     public Protector addSynchronousTask(ProtectorTask synchronousTask) {
         mSynProtectorTask = synchronousTask;
         return this;
