@@ -21,17 +21,19 @@ import java.util.List;
 
 /**
  * Created by liuzhao on 2017/9/22.
+ * <p>
+ * StartUp-Protector 入口类
  */
 
 public class Protector {
     private static Context context;
-    private static Protector mProtector;
+    private static volatile Protector mProtector;
     private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
     private List<CrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
-    private static final int firstLevel = 2;
-    private static final int SecondLevel = 3;
-    public boolean restartApp = true;
-    private ProtectorTask mProtectorTask;
+    private static final int Times_FirstLevel = 2;// 崩溃等级一
+    private static final int Times_SecondLevel = 3;// 崩溃等级二
+    public boolean restartApp = true;// default to restart
+    private ProtectorTask mSynProtectorTask;
 
     private CrashCallBack mCrashCallBack;
 
@@ -51,37 +53,40 @@ public class Protector {
 
     public void init(Application application) {
         if (application == null) {
-            ProtectorLogUtils.e("serious error : param application is null");
+            ProtectorLogUtils.e("serious error : param application is null ,Protector init failed");
             return;
         }
 
         if (!ProtectorUtils.isMainProcess(application)) {
-            return;
+            return;// only for MainProcess, else just return
         }
         context = application;
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
+
+        Thread.setDefaultUncaughtExceptionHandler(new ProtectorHandler(Thread.getDefaultUncaughtExceptionHandler()));
+
         int countNow = ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0);
-        if (countNow > firstLevel) {
+        if (countNow > Times_FirstLevel) {
             ProtectorLogUtils.i("enter level one");
             for (Runnable runnable : mUserTasks) {
                 if (runnable != null) {
                     ProtectorThreadUtils.getInstance().execute(runnable);
                 }
             }
-            if (countNow > SecondLevel) {
+            if (countNow > Times_SecondLevel) {
                 // clear all and fix
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
 
-                if (mProtectorTask != null) {
+                if (mSynProtectorTask != null) {
                     // suspend the process , you can do a time-consuming operation for example hotfix here
                     ProtectorThreadUtils.getInstance().execute(new Runnable() {
                         @Override
                         public void run() {
-                            mProtectorTask.doInBackground();
+                            mSynProtectorTask.doInBackground();
                         }
                     });
-                    while (!mProtectorTask.isFinished()) {
+                    while (!mSynProtectorTask.isFinished()) {
                         // do nothing here, which can save memory and cpu.
                     }
                 }
@@ -91,10 +96,10 @@ public class Protector {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                // if this is called, we can mark a successful lanuch.
                 lanuchSucceed();
             }
         }, 5000);
-        Thread.setDefaultUncaughtExceptionHandler(new ProtectorHandler(Thread.getDefaultUncaughtExceptionHandler()));
     }
 
     public Protector addTask(Runnable runnable) {
@@ -102,13 +107,19 @@ public class Protector {
         return this;
     }
 
+    /**
+     * you can add more than once
+     *
+     * @param crashManager
+     * @return
+     */
     public Protector addCrashManager(CrashManager crashManager) {
         mUserCrashManagers.add(crashManager);
         return this;
     }
 
-    public Protector addSynchronousTask(ProtectorTask protectorTask) {
-        mProtectorTask = protectorTask;
+    public Protector addSynchronousTask(ProtectorTask synchronousTask) {
+        mSynProtectorTask = synchronousTask;
         return this;
     }
 

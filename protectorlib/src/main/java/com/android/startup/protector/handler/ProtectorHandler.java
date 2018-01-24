@@ -37,7 +37,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         Context context = Protector.getInstance().getContext();
         String crashMsg = getCrashInfo(ex);
         if (Protector.getInstance().getCrashCallBack() != null) {
-            Protector.getInstance().getCrashCallBack().uncaughtException(ex,crashMsg);
+            Protector.getInstance().getCrashCallBack().uncaughtException(ex, crashMsg);
         }
         String packName = context.getPackageName();
         ProtectorLogUtils.e("CrashMsg:" + crashMsg);
@@ -45,7 +45,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         long lastCrashTime = ProtectorSpUtils.getLong(SpConstant.CRASHTIME, 0);
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
-            ProtectorLogUtils.e("more than time we define, may setRestart app");
+            ProtectorLogUtils.e("more than time we define, may restart app");
             boolean ifStart = true;
             List<CrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
             // we need to konw if this crash satisfy the Situation to setRestart
@@ -57,17 +57,23 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
                 }
             }
             if (ifStart) {
-                ProtectorLogUtils.e("decide to setRestart app");
+                ProtectorLogUtils.e("decide to restart app");
                 ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
                 restartApp(context, packName);
             }
         }
         if (mDefaultUncaughtExceptionHandler != null) {
-            mDefaultUncaughtExceptionHandler.uncaughtException(t, ex);
+            mDefaultUncaughtExceptionHandler.uncaughtException(t, ex);// pass it to the original UncaughtExceptionHandler
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
+        android.os.Process.killProcess(android.os.Process.myPid()); // Kill MySelf
     }
 
+    /**
+     * ReStart MySelf
+     *
+     * @param context
+     * @param packName
+     */
     private void restartApp(Context context, String packName) {
         try {
             PackageInfo packInfo = context.getPackageManager().getPackageInfo(
