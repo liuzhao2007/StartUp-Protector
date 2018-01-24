@@ -12,13 +12,12 @@ import java.util.concurrent.TimeUnit;
 
 public class ProtectorThreadUtils {
 
-    private static ProtectorThreadUtils mProtectorThreadUtils;
+    private static volatile ProtectorThreadUtils mProtectorThreadUtils;
     private static ThreadPoolExecutor mExecutor;
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
     private static final int KEEP_ALIVE_SECONDS = 10;
-
 
     private ProtectorThreadUtils() {
     }

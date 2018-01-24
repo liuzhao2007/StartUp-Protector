@@ -14,20 +14,19 @@ public class ProtectorApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // custom crashhandler should be seted before you init Protector
+        // your custom crashhandler should be seted before you init Protector
         Thread.setDefaultUncaughtExceptionHandler(new TestCrashHandler());
 
         Protector.getInstance()
-                .addTask(new Runnable() {// register Runnable to be executed when firstlevel crash occured.
+                .addNormalTask(new Runnable() {// register Runnable to be executed when firstlevel crash occured.
                     @Override
                     public void run() {
                         Toast.makeText(getApplicationContext(), "执行注册逻辑", 1).show();
                     }
                 })
-                .setCrashCallBack(new TestCrashCallBack())
-                .setRestart(false)
-                .addCrashManager(new TestCrashManager())
                 .addSynchronousTask(new TestProtectorTask())
+                .setCrashCallBack(new TestCrashCallBack())
+                .addCrashManager(new TestCrashManager())
                 .init(ProtectorApp.this);
     }
 }

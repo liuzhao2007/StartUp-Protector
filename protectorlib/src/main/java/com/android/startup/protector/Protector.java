@@ -7,7 +7,7 @@ import android.os.Looper;
 
 import com.android.startup.protector.clear.ProtectorClearer;
 import com.android.startup.protector.constant.SpConstant;
-import com.android.startup.protector.handler.ProtectorHandler;
+import com.android.startup.protector.handler.ProtectorExceptionHandler;
 import com.android.startup.protector.iprotector.CrashCallBack;
 import com.android.startup.protector.iprotector.CrashManager;
 import com.android.startup.protector.iprotector.ProtectorTask;
@@ -32,8 +32,8 @@ public class Protector {
     private List<CrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
     private static final int Times_FirstLevel = 2;// 崩溃等级一
     private static final int Times_SecondLevel = 3;// 崩溃等级二
-    public boolean restartApp = true;// default to restart
-    private ProtectorTask mSynProtectorTask;
+    private static final int Times_WorstLevel = 5;// 崩溃等级三，最严重
+    private ProtectorTask mSynProtectorTask;// 阻塞情况下执行的Task
 
     private CrashCallBack mCrashCallBack;
 
@@ -53,7 +53,7 @@ public class Protector {
 
     public void init(Application application) {
         if (application == null) {
-            ProtectorLogUtils.e("serious error : param application is null ,Protector init failed");
+            ProtectorLogUtils.e("serious error : param application is null ,Protector init failed !!!");
             return;
         }
 
@@ -63,7 +63,7 @@ public class Protector {
         context = application;
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
 
-        Thread.setDefaultUncaughtExceptionHandler(new ProtectorHandler(Thread.getDefaultUncaughtExceptionHandler()));
+        Thread.setDefaultUncaughtExceptionHandler(new ProtectorExceptionHandler(Thread.getDefaultUncaughtExceptionHandler()));
 
         int countNow = ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0);
         if (countNow > Times_FirstLevel) {
@@ -73,12 +73,14 @@ public class Protector {
                     ProtectorThreadUtils.getInstance().execute(runnable);
                 }
             }
+
             if (countNow > Times_SecondLevel) {
                 // clear all and fix
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
 
-                if (mSynProtectorTask != null) {
+                if (countNow >= Times_WorstLevel && mSynProtectorTask != null) {
+                    ProtectorLogUtils.i("enter level three ,worst");
                     // suspend the process , you can do a time-consuming operation for example hotfix here
                     ProtectorThreadUtils.getInstance().execute(new Runnable() {
                         @Override
@@ -99,10 +101,16 @@ public class Protector {
                 // if this is called, we can mark a successful lanuch.
                 lanuchSucceed();
             }
-        }, 5000);
+        }, 10000);
     }
 
-    public Protector addTask(Runnable runnable) {
+    /**
+     * 添加正常的任务，在崩溃等级一执行
+     *
+     * @param runnable
+     * @return
+     */
+    public Protector addNormalTask(Runnable runnable) {
         mUserTasks.add(runnable);
         return this;
     }
@@ -129,12 +137,6 @@ public class Protector {
         ProtectorLogUtils.i("markSuceed");
     }
 
-    // if try to setRestart app
-    public Protector setRestart(boolean restart) {
-        restartApp = restart;
-        return this;
-    }
-
     // setCrashCallback to handle crash for example record or report
     public Protector setCrashCallBack(CrashCallBack crashCallBack) {
         mCrashCallBack = crashCallBack;
@@ -143,7 +145,7 @@ public class Protector {
 
     public Protector setDebug(boolean isDebug) {
         ProtectorLogUtils.setDebug(isDebug);
-        ProtectorLogUtils.i("StartUp-Protector debug : " + isDebug);
+        ProtectorLogUtils.i("StartUp-Protector Mode : " + (isDebug ? "Debug" : "Release"));
         return this;
     }
 

@@ -23,12 +23,12 @@ import java.util.List;
  * Created by liuzhao on 2017/9/22.
  */
 
-public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
+public class ProtectorExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-    private static final long TIME_CRASHNOTREOPEN = 10000;//the time not to setRestart after crash
+    private static final long TIME_CRASH_NOTREOPEN = 10000;//the time not to setRestart after crash
     private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
-    public ProtectorHandler(Thread.UncaughtExceptionHandler exceptionHandler) {
+    public ProtectorExceptionHandler(Thread.UncaughtExceptionHandler exceptionHandler) {
         this.mDefaultUncaughtExceptionHandler = exceptionHandler;
     }
 
@@ -44,7 +44,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
         long crashtime = System.currentTimeMillis();
         long lastCrashTime = ProtectorSpUtils.getLong(SpConstant.CRASHTIME, 0);
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
-        if (crashtime - lastCrashTime > TIME_CRASHNOTREOPEN && Protector.getInstance().restartApp) {
+        if (crashtime - lastCrashTime > TIME_CRASH_NOTREOPEN) {
             ProtectorLogUtils.e("more than time we define, may restart app");
             boolean ifStart = true;
             List<CrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
@@ -53,15 +53,16 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
                 for (CrashManager iCrashManager : mUserCrashManagers) {
                     if (!iCrashManager.ifRestart(crashMsg)) {
                         ifStart = false;
+                        break;
                     }
                 }
             }
             if (ifStart) {
                 ProtectorLogUtils.e("decide to restart app");
-                ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);
                 restartApp(context, packName);
             }
         }
+        ProtectorSpUtils.putLong(SpConstant.CRASHTIME, crashtime);// update the crash time
         if (mDefaultUncaughtExceptionHandler != null) {
             mDefaultUncaughtExceptionHandler.uncaughtException(t, ex);// pass it to the original UncaughtExceptionHandler
         }
@@ -90,6 +91,7 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
         } catch (Exception e) {
+            ProtectorLogUtils.e("Serious Error: restart app failed !!!");
             e.printStackTrace();
         }
     }
@@ -130,6 +132,12 @@ public class ProtectorHandler implements Thread.UncaughtExceptionHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                writer.close();
+                pw.close();
+            } catch (Exception e) {
+            }
         }
         return sb.append("myTid = " + android.os.Process.myTid()).append("\n")
                 .append("myPid = " + android.os.Process.myPid()).append("\n")
