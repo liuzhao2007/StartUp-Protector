@@ -7,6 +7,8 @@ import java.io.File;
 
 /**
  * Created by liuzhao on 2017/9/22.
+ * <p>
+ * file clearer
  */
 
 public class ProtectorClearer {

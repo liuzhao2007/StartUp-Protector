@@ -2,6 +2,10 @@ package com.android.startup.protector.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 import java.util.List;
 
@@ -57,5 +61,32 @@ public class ProtectorUtils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * ReStart MySelf
+     *
+     * @param context
+     * @param packName
+     */
+    public static void restartApp(Context context) {
+        try {
+            PackageInfo packInfo = context.getPackageManager().getPackageInfo(
+                    context.getPackageName(),
+                    PackageManager.GET_UNINSTALLED_PACKAGES
+                            | PackageManager.GET_ACTIVITIES);
+            ActivityInfo[] activities = packInfo.activities;
+            if (activities != null && activities.length != 0) {
+                ActivityInfo startActivity = activities[0];
+                Intent intent = new Intent();
+                intent.setClassName(context.getPackageName(), startActivity.name);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        } catch (Exception e) {
+            ProtectorLogUtils.e("Serious Error: restart app failed !!!");
+            e.printStackTrace();
+        }
     }
 }

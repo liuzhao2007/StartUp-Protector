@@ -6,7 +6,7 @@ package com.android.startup.protector.constant;
 
 public class SpConstant {
 
-    public static final String CRASHCONUT = "crashcount";
+    public static final String CRASHCONUT = "crashCount";
     public static final String CRASHTIME = "crashTime";
 
 }

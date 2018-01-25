@@ -75,11 +75,12 @@ public class Protector {
             }
 
             if (countNow > Times_SecondLevel) {
-                // clear all and fix
+                // clear all
                 ProtectorLogUtils.i("enter level two");
                 ProtectorClearer.clearAllFile(context);
 
                 if (countNow >= Times_WorstLevel && mSynProtectorTask != null) {
+                    // fix operation can be done here
                     ProtectorLogUtils.i("enter level three ,worst");
                     // suspend the process , you can do a time-consuming operation for example hotfix here
                     ProtectorThreadUtils.getInstance().execute(new Runnable() {
@@ -99,7 +100,7 @@ public class Protector {
             @Override
             public void run() {
                 // if this is called, we can mark a successful lanuch.
-                lanuchSucceed();
+                markLanuchSucceed();
             }
         }, 10000);
     }
@@ -141,7 +142,7 @@ public class Protector {
     }
 
     // mark as app lanuch successed
-    public void lanuchSucceed() {
+    public void markLanuchSucceed() {
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, 0);
         ProtectorLogUtils.i("markSuceed");
     }
