@@ -130,7 +130,7 @@ public class Protector {
     }
 
     /**
-     * add Synchronous task,which will be runnned in worst situation;
+     * add Synchronous task,which will be runned in worst situation;
      * can add more
      *
      * @param synchronousTask
