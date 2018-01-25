@@ -43,10 +43,10 @@ public class ProtectorExceptionHandler implements Thread.UncaughtExceptionHandle
         ProtectorLogUtils.e("ThisCrashTime" + crashtime + "————》" + "LastCrashTime:" + lastCrashTime);
         if (crashtime - lastCrashTime > TIME_CRASH_NOTREOPEN) {
             ProtectorLogUtils.e("more than time we define, may restart app");
-            boolean ifStart = true;
+            boolean ifStart = Protector.getInstance().isReStart();
             List<CrashManager> mUserCrashManagers = Protector.getInstance().getUserCrashManagers();
             // we need to konw if this crash satisfy the Situation restart
-            if (mUserCrashManagers != null && !mUserCrashManagers.isEmpty()) {
+            if (ifStart && mUserCrashManagers != null && !mUserCrashManagers.isEmpty()) {
                 for (CrashManager iCrashManager : mUserCrashManagers) {
                     if (!iCrashManager.ifRestart(crashMsg)) {
                         ifStart = false;

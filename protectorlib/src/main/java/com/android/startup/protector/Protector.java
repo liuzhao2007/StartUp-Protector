@@ -34,6 +34,7 @@ public class Protector {
     private static final int Times_SecondLevel = 3;// 崩溃等级二
     private static final int Times_WorstLevel = 5;// 崩溃等级三，最严重
     private ProtectorTask mSynProtectorTask;// 阻塞情况下执行的Task
+    private boolean mDefaultReStart = true;// 默认是否重启，默认true
 
     private CrashCallBack mCrashCallBack;
 
@@ -171,4 +172,11 @@ public class Protector {
         return mCrashCallBack;
     }
 
+    public boolean isReStart() {
+        return mDefaultReStart;
+    }
+
+    public void setRestart(boolean defaultReStart) {
+        this.mDefaultReStart = defaultReStart;
+    }
 }

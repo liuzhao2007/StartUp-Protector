@@ -21,9 +21,9 @@ public class TestProtectorTask extends ProtectorTask {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 ProtectorLogUtils.i("hotfix end");
-                onPostExecute();// this must be called when it's ok
+
+                onPostExecute();// this must be called when your work is done
             }
         });
     }
