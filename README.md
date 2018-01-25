@@ -18,7 +18,7 @@
 - Gradle中配置；
 
 ```
-    compile 'com.startup:protector:1.0.0'
+    compile 'com.startup:protector:1.0.1'
 ```
 
 - 初始化；
