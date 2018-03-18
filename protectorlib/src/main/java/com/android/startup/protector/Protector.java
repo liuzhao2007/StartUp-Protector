@@ -145,7 +145,7 @@ public class Protector {
     // mark as app lanuch successed
     public void markLanuchSucceed() {
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, 0);
-        ProtectorLogUtils.i("markSuceed");
+        ProtectorLogUtils.i("markAsSucceed");
     }
 
     // setCrashCallback to handle crash for example record or report
