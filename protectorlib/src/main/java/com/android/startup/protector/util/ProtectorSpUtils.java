@@ -4,18 +4,24 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.android.startup.protector.Protector;
-
-import static java.security.AccessController.getContext;
+import com.android.startup.protector.constant.SpConstant;
 
 /**
  * Created by liuzhao on 2017/9/22.
  */
 public class ProtectorSpUtils {
 
-    private static String NAME = "startup_protector";
+    private static volatile SharedPreferences sPreferences;
 
     public static SharedPreferences getSharedPreference() {
-        return Protector.getInstance().getContext().getSharedPreferences(NAME, Context.MODE_PRIVATE);
+        if (sPreferences == null) {
+            synchronized (ProtectorSpUtils.class) {
+                if (sPreferences == null) {
+                    sPreferences = Protector.getInstance().getContext().getSharedPreferences(SpConstant.PROTECTORSPNAME, Context.MODE_PRIVATE);
+                }
+            }
+        }
+        return sPreferences;
     }
 
     public static boolean putString(String key, String value) {

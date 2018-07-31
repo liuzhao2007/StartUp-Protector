@@ -26,8 +26,8 @@ import java.util.List;
  */
 
 public class Protector {
-    private static Context context;
-    private static volatile Protector mProtector;
+    private static Context sContext;
+    private static volatile Protector sProtector;
     private List<Runnable> mUserTasks = new ArrayList<>();// tasks user define
     private List<CrashManager> mUserCrashManagers = new ArrayList<>();// crashManager user define
     private static final int Times_FirstLevel = 2;// 崩溃等级一
@@ -42,14 +42,14 @@ public class Protector {
     }
 
     public static Protector getInstance() {
-        if (mProtector == null) {
+        if (sProtector == null) {
             synchronized (Protector.class) {
-                if (mProtector == null) {
-                    mProtector = new Protector();
+                if (sProtector == null) {
+                    sProtector = new Protector();
                 }
             }
         }
-        return mProtector;
+        return sProtector;
     }
 
     public void init(Application application) {
@@ -61,7 +61,7 @@ public class Protector {
         if (!ProtectorUtils.isMainProcess(application)) {
             return;// only for MainProcess, else just return
         }
-        context = application;
+        sContext = application;
         ProtectorSpUtils.putInt(SpConstant.CRASHCONUT, ProtectorSpUtils.getInt(SpConstant.CRASHCONUT, 0) + 1);
 
         Thread.setDefaultUncaughtExceptionHandler(new ProtectorExceptionHandler(Thread.getDefaultUncaughtExceptionHandler()));
@@ -78,7 +78,7 @@ public class Protector {
             if (countNow > Times_SecondLevel) {
                 // clear all
                 ProtectorLogUtils.i("enter level two");
-                ProtectorClearer.clearAllFile(context);
+                ProtectorClearer.clearAllFile(sContext);
 
                 if (countNow >= Times_WorstLevel && mSynProtectorTask != null) {
                     // fix operation can be done here
@@ -90,7 +90,7 @@ public class Protector {
                             mSynProtectorTask.doInBackground();
                         }
                     });
-                    while (!mSynProtectorTask.isFinished()) {
+                    while (!mSynProtectorTask.ismFinished()) {
                         // do nothing here, which can save memory and cpu.
                     }
                 }
@@ -155,13 +155,13 @@ public class Protector {
     }
 
     public Protector setDebug(boolean isDebug) {
-        ProtectorLogUtils.setDebug(isDebug);
+        ProtectorLogUtils.setsDebug(isDebug);
         ProtectorLogUtils.i("StartUp-Protector Mode : " + (isDebug ? "Debug" : "Release"));
         return this;
     }
 
     public Context getContext() {
-        return context;
+        return sContext;
     }
 
     public List<CrashManager> getUserCrashManagers() {

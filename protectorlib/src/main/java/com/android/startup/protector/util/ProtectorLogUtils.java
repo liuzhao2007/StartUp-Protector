@@ -12,7 +12,7 @@ import java.io.StringWriter;
 public class ProtectorLogUtils {
 
     private static String DEFAULT_TAG = "protector";
-    private static boolean debug = true;
+    private static boolean sDebug = true;
 
     private static String getMessage(String msg) {
         StackTraceElement sts = new Exception().getStackTrace()[2];
@@ -27,49 +27,49 @@ public class ProtectorLogUtils {
 
 
     public static void d(String tag, String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.d(tag, getMessage(msg));
     }
 
     public static void d(String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.d(DEFAULT_TAG, getMessage(msg));
     }
 
     public static void v(String tag, String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.v(tag, getMessage(msg));
     }
 
     public static void v(String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.v(DEFAULT_TAG, getMessage(msg));
     }
 
     public static void i(String tag, String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.i(tag, getMessage(msg));
     }
 
     public static void i(String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.i(DEFAULT_TAG, getMessage(msg));
     }
 
     public static void e(String tag, String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.e(tag, getMessage(msg));
@@ -77,7 +77,7 @@ public class ProtectorLogUtils {
 
 
     public static void i(Exception ex) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         StringWriter writer = new StringWriter();
@@ -88,7 +88,7 @@ public class ProtectorLogUtils {
     }
 
     public static void e(Exception ex) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         StringWriter writer = new StringWriter();
@@ -99,27 +99,27 @@ public class ProtectorLogUtils {
     }
 
     public static void e(String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.e(DEFAULT_TAG, getMessage(msg));
     }
 
     public static void w(String tag, String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.w(tag, getMessage(msg));
     }
 
     public static void w(String msg) {
-        if (!debug) {
+        if (!sDebug) {
             return;
         }
         Log.w(DEFAULT_TAG, getMessage(msg));
     }
 
-    public static void setDebug(boolean debug) {
-        ProtectorLogUtils.debug = debug;
+    public static void setsDebug(boolean debug) {
+        ProtectorLogUtils.sDebug = debug;
     }
 }

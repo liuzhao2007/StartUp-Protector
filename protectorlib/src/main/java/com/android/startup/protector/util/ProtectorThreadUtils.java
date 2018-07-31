@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ProtectorThreadUtils {
 
-    private static volatile ProtectorThreadUtils mProtectorThreadUtils;
-    private static ThreadPoolExecutor mExecutor;
+    private static volatile ProtectorThreadUtils sProtectorThreadUtils;
+    private static ThreadPoolExecutor sExecutor;
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
     private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
@@ -23,20 +23,20 @@ public class ProtectorThreadUtils {
     }
 
     public static ProtectorThreadUtils getInstance() {
-        if (mProtectorThreadUtils == null) {
+        if (sProtectorThreadUtils == null) {
             synchronized (ProtectorThreadUtils.class) {
-                if (mProtectorThreadUtils == null) {
-                    mProtectorThreadUtils = new ProtectorThreadUtils();
-                    mExecutor = new ThreadPoolExecutor(
+                if (sProtectorThreadUtils == null) {
+                    sProtectorThreadUtils = new ProtectorThreadUtils();
+                    sExecutor = new ThreadPoolExecutor(
                             CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
                             new LinkedBlockingQueue<Runnable>());
                 }
             }
         }
-        return mProtectorThreadUtils;
+        return sProtectorThreadUtils;
     }
 
     public void execute(Runnable runnable) {
-        mExecutor.execute(runnable);
+        sExecutor.execute(runnable);
     }
 }

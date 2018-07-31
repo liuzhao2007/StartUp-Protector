@@ -8,7 +8,7 @@ import com.android.startup.protector.util.ProtectorThreadUtils;
 
 public abstract class ProtectorTask implements Runnable {
 
-    private boolean isFinished = false;
+    private boolean mFinished = false;
 
     @Override
     public void run() {
@@ -24,11 +24,11 @@ public abstract class ProtectorTask implements Runnable {
      * notice: must be called when your fix is ok !!!
      */
     public void onPostExecute() {
-        isFinished = true;
+        mFinished = true;
     }
 
-    public boolean isFinished() {
-        return isFinished;
+    public boolean ismFinished() {
+        return mFinished;
     }
 
     /**
